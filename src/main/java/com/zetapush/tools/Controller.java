@@ -4,10 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,8 @@ import feign.Feign;
 
 @RestController
 public class Controller {
+	@Value("${token}")
+	private String githubToken;
 	
 	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/zip")
 	@ResponseBody
@@ -80,7 +83,7 @@ public class Controller {
 	 */
 	public void getContentFiles(GitHubHttpClientFolder apiFolder, GitHubHttpGetContent apiContent, String pathLocalFolder, String pathRemoteFolder) {
 		// Get the subfolder as an array of JSON object for each entry (directory or file)
-		JSONArray files = new JSONArray(apiFolder.getSubfolder(pathRemoteFolder));
+		JSONArray files = new JSONArray(apiFolder.getSubfolder(githubToken, pathRemoteFolder));
 		
 		// Create a new subfolder in the local storage for each subfolder we analyse
 		File localFolder = new File(pathLocalFolder);
@@ -94,7 +97,7 @@ public class Controller {
 			// Save the content of each file in the subfolder
 			if (typeEntry.equals("file")) {
 				// Get content and save it
-				String content = apiContent.getFileContent(entry.getString("path"));
+				String content = apiContent.getFileContent(githubToken, entry.getString("path"));
 				
 				File file = new File(pathLocalFolder + entry.getString("name"));
 				FileWriter writer = null;
