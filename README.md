@@ -17,4 +17,4 @@ There are 3 properties :
 
 ### From _curl_
 
-`curl http://github-download-subfolder.zpush.io/?owner=zetapush&repository=zetapush-tutorials&path=avengersChat --output avengersChat.zip`
+`curl -X GET 'http://github-download-subfolder.zpush.io/?owner=zetapush&repository=zetapush-tutorials&path=avengersChat' --output avengersChat.zip`
