@@ -7,7 +7,7 @@ import feign.Param;
 import feign.RequestLine;
 
 @FeignClient("github-content")
-@Headers("Authorization: token c08eb69724dc94c48edcbc0460e6edca6a5ce820")
+@Headers("Authorization: token 5605ddf85fcac4db2b8aa31478a8f59d9b36bb9a")
 public interface GitHubHttpGetContent {
 
 	@RequestLine("GET {path}")

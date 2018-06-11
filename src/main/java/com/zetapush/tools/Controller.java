@@ -4,16 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.nio.file.Paths;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +29,7 @@ public class Controller {
 	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/zip")
 	@ResponseBody
 	@CrossOrigin(origins = "*")
-	public ResponseEntity<InputStreamResource> getSubfolder(
+	public ResponseEntity<Resource> getSubfolder(
 			@RequestParam(required = true) String owner,
 			@RequestParam(required = true) String repository,
 			@RequestParam(required = false, defaultValue = "") String path
@@ -69,7 +68,6 @@ public class Controller {
 				.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment;filename=" + nameOfTheZipFile)
-				.contentType(MediaType.APPLICATION_PDF).contentLength(zipOutput.length())
 				.body(resource);
 	}
 	
