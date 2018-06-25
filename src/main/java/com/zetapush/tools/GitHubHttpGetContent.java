@@ -11,5 +11,5 @@ import feign.RequestLine;
 public interface GitHubHttpGetContent {
 
 	@RequestLine("GET {path}")
-	String getFileContent(@Param("token") String token, @Param("path") String path);
+	byte[] getFileContent(@Param("token") String token, @Param("path") String path);
 }

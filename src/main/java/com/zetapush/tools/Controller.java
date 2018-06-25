@@ -1,9 +1,14 @@
 package com.zetapush.tools;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -80,8 +85,9 @@ public class Controller {
 	 * @param apiContent HttpClient to get content of each file 
 	 * @param pathLocalFolder Path of the subfolder in the local storage (for saving content)
 	 * @param pathRemoteFolder Path of the subfolder in the GitHub directory
+	 * @throws IOException 
 	 */
-	public void getContentFiles(GitHubHttpClientFolder apiFolder, GitHubHttpGetContent apiContent, String pathLocalFolder, String pathRemoteFolder) {
+	public void getContentFiles(GitHubHttpClientFolder apiFolder, GitHubHttpGetContent apiContent, String pathLocalFolder, String pathRemoteFolder) throws IOException {
 		// Get the subfolder as an array of JSON object for each entry (directory or file)
 		JSONArray files = new JSONArray(apiFolder.getSubfolder(githubToken, pathRemoteFolder));
 		
@@ -97,25 +103,10 @@ public class Controller {
 			// Save the content of each file in the subfolder
 			if (typeEntry.equals("file")) {
 				// Get content and save it
-				String content = apiContent.getFileContent(githubToken, entry.getString("path"));
+				byte[] content = apiContent.getFileContent(githubToken, entry.getString("path"));
 				
-				File file = new File(pathLocalFolder + entry.getString("name"));
-				FileWriter writer = null;
-				try {
-					if (file.createNewFile()) {
-						 writer = new FileWriter(file);
-						writer.write(content);
-					}
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} finally {
-					if (writer != null)
-						try {
-							writer.close();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-				}
+				Path file = Paths.get(pathLocalFolder, entry.getString("name"));
+				Files.copy(new ByteArrayInputStream(content), file, StandardCopyOption.REPLACE_EXISTING);
 			} else if (typeEntry.equals("dir")) {
 				// Iterate on the next subfolder to get content of each file inside it
 				getContentFiles(apiFolder, apiContent, pathLocalFolder + entry.getString("name") + "/", pathRemoteFolder + "/" + entry.getString("name"));
